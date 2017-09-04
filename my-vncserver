@@ -1,0 +1,29 @@
+#!/bin/bash
+
+vnc_display=${1:-:15}
+
+rc=0
+check-vnc ${vnc_display} || rc=$?
+
+case "$rc" in
+    0) echo "VNC server is already running on $vnc_display. All is well!"
+       exit 0;;
+    1) echo "VNC server is not running on $vnc_display, so I will start one."
+       vncserver ${vnc_display} ;;
+    2) echo "Something is wrong, but I will attempt to clean it up and " \
+	    "start a new one."
+       vncserver -kill ${vnc_display}
+       vncserver ${vnc_display};;
+    *) echo "ERROR: Unknown return code from check-vnc: $rc"
+       exit 1;;
+esac
+
+# Check if newly started vncserver is running properly.
+rc=0
+check-vnc ${vnc_display} || rc=$?
+case "$rc" in
+    0) exit 0;;
+    *) echo "ERROR: Failed to start new VNC server. Sorry, but you will " \
+	    "have to clean it up manually and try again."
+       exit $rc
+esac

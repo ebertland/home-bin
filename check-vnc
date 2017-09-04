@@ -1,0 +1,69 @@
+#!/bin/bash
+
+#DEBUG=1
+
+set -e
+
+vnc_display=$1
+if [ -z ${vnc_display} ]; then
+    echo "Usage: $0 <vnc-display>"
+    exit 0
+fi
+
+pid_file=${HOME}/.vnc/$(hostname)${vnc_display}.pid
+if [[ ! -f ${pid_file} ]]; then
+    echo "No pid file found for display ${vnc_display}."
+    exit 1
+fi
+
+pid=$(cat ${pid_file})
+port=$((5900 + ${vnc_display##*:}))
+
+if [[ -n $DEBUG && $DEBUG -gt 0 ]]; then
+    echo "pid:  $pid"
+    echo "port: $port"
+fi
+
+if [[ ! -f /proc/${pid}/cmdline ]]; then
+    echo "Process ${pid} for display ${vnc_display} was already killed."
+    exit 2
+fi
+
+process=$(cat /proc/${pid}/cmdline | tr '\000' ' ')
+
+if ! echo ${process} | grep -q /Xvnc; then
+    echo "Process ${pid} for ${vnc_display} is not a vnc server."
+    exit 2
+fi
+
+process_display=$(echo ${process} | sed -e 's/.*Xvnc \([^ ]*\).*/\1/')
+process_port=$(echo ${process} | sed -e 's/.*rfbport \([^ ]*\).*/\1/')
+
+if [[ ${process_display} != ${vnc_display} ]]; then
+    echo "Process ${pid} does not have the right vnc display number."
+    exit 2
+fi
+
+if [[ ${process_port} -ne ${port} ]]; then
+    echo "Process ${pid} does not have the right vnc rfbport number."
+    exit 2
+fi
+
+if ! nc localhost ${port} </dev/null | grep -q ^RFB; then
+    echo "No process is listening on port ${port}."
+    exit 2
+fi
+
+# Does not work on all versions of nc.
+#nc -vz localhost ${port} >& /dev/null
+
+netstat_info=$(netstat -ltn4 -p 2> /dev/null |grep :${port})
+netstat_process=$(echo ${netstat_info} | awk '{print $7}')
+
+if [[ ${netstat_process} != "${pid}/Xvnc" ]]; then
+    echo "Unknown process is listening on port ${port}."
+    exit 2
+fi
+
+# All checks passed!
+exit 0

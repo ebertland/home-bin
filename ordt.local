@@ -1,0 +1,5 @@
+#!/bin/sh
+
+ORDT_JAR=$(dirname $0)/../ws/open-register-design-tool/releases/170710.03/Ordt.jar
+
+exec java -jar $ORDT_JAR "$@"
