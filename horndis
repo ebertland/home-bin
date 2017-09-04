@@ -1,0 +1,5 @@
+#!/bin/sh
+
+/bin/echo -n "Loading HoRNDIS driver..."
+sudo kextload /Library/Extensions/HoRNDIS.kext
+/bin/echo " Done."
