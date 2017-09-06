@@ -1,0 +1,27 @@
+#!/bin/bash
+
+vnc_display=:15
+vnc_host=server3.cerebras.net
+vnc_user=jeff
+ssh_options="-o ServerAliveInterval=15 -o ServerAliveCountMax=10"
+ssh_sleep_duration=20
+
+case $(uname -s) in
+    Darwin*)    vncviewer="open -W -a TigerVNC\ Viewer\ 1.7.1.app --args";;
+    *)          vncviewer=vncviewer;;
+esac
+
+echo -n "Starting ssh tunnel to ${vnc_host}..."
+vnc_tcp_port=59${vnc_display:(-2)}
+ssh -L ${vnc_tcp_port}:localhost:${vnc_tcp_port} -f \
+    -l ${vnc_user} ${vnc_host} sleep ${ssh_sleep_duration}
+ssh_exitcode=$?
+
+if [ ${ssh_exitcode} -eq 0 ]; then
+    echo "Success"
+else
+    echo "Failure"
+    exit ${ssh_exitcode}
+fi
+
+eval exec ${vncviewer} -PasswordFile ${HOME}/.vnc/server3.passwd ${vnc_display}
