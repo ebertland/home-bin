@@ -1,6 +1,6 @@
 #!/bin/bash
 
-vnc_display=${1:-:15}
+vnc_display=${1:-:1}
 
 rc=0
 check-vnc ${vnc_display} || rc=$?
