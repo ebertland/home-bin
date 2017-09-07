@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -e
+
+sudo -v
+sudo apt update
+sudo apt upgrade
+
+echo -n "Run autoremove [yN]? "; read answer
+if [[ "$answer" =~ [yY].* ]]; then
+   sudo apt autoremove --purge
+fi

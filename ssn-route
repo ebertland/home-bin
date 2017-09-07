@@ -1,0 +1,8 @@
+#!/bin/sh
+
+gw_ip=`host jebert-lab1.ebertland.net | cut -f4 -d' '`
+gw_dev=enp5s7
+
+sudo ip route add 10.0.0.0/8 via ${gw_ip} dev ${gw_dev}
+
+#XXX Need to do something about DNS
