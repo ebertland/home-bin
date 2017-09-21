@@ -1,0 +1,3 @@
+#!/bin/sh
+
+find $GIT_ROOT/obj-default -name '*.mk' -exec rm -v {} \;
