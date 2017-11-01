@@ -1,7 +1,7 @@
 #!/bin/sh
 
 SSHFS_OPTIONS="reconnect ServerAliveInterval=15 ServerAliveCountMax=3
-	       follow_symlinks"
+	       follow_symlinks idmap=user"
 
 fusermount -uz $HOME/aws 2>&1 > /dev/null
 sshfs -o $(echo ${SSHFS_OPTIONS} | tr ' ' ',') server3.cerebras.net: $HOME/aws
