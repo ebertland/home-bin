@@ -13,7 +13,7 @@ case $(uname -s) in
 esac
 
 echo -n "Starting ssh tunnel to ${vnc_host}..."
-vnc_tcp_port=59${vnc_display:(-2)}
+vnc_tcp_port=$((5900 + $(echo ${vnc_display} | cut -d: -f2)))
 ssh -L ${vnc_tcp_port}:localhost:${vnc_tcp_port} -f \
     -l ${vnc_user} ${vnc_host} sleep ${ssh_sleep_duration}
 ssh_exitcode=$?
