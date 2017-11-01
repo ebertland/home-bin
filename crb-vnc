@@ -4,7 +4,7 @@ vnc_display=:15
 vnc_host=server3.cerebras.net
 vnc_user=jeff
 vnc_passwd_file=${HOME}/.vnc/server3.passwd
-ssh_options="-o ServerAliveInterval=15 -o ServerAliveCountMax=10"
+ssh_options="-o ServerAliveInterval=15 -o ServerAliveCountMax=3"
 ssh_sleep_duration=20
 
 case $(uname -s) in
@@ -15,7 +15,7 @@ esac
 echo -n "Starting ssh tunnel to ${vnc_host}..."
 vnc_tcp_port=$((5900 + $(echo ${vnc_display} | cut -d: -f2)))
 ssh -L ${vnc_tcp_port}:localhost:${vnc_tcp_port} -f \
-    -l ${vnc_user} ${vnc_host} sleep ${ssh_sleep_duration}
+    -l ${vnc_user} ${ssh_options} ${vnc_host} sleep ${ssh_sleep_duration}
 ssh_exitcode=$?
 
 if [ ${ssh_exitcode} -eq 0 ]; then
