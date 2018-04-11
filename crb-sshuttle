@@ -1,0 +1,3 @@
+#!/bin/sh
+
+sshuttle -r jeff@server3.cerebras.net -H -D --seed-hosts jenkins.cerebras.aws 172.16.0.0/12
