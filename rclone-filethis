@@ -1,0 +1,3 @@
+#!/bin/sh
+
+rclone -v copy gdrive:/FileThis onedrive:/FileThis
